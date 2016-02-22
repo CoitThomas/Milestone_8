@@ -154,8 +154,9 @@ def build_date(string):
     day = make_int(date.group('day'))
     year = make_int(date.group('year'))
 
-    if is_valid_date(month, day, year):
-        return str(month), str(day), str(year)
+    assert is_valid_date(month, day, year), "A valid date must be provided."
+
+    return str(month), str(day), str(year)
 
 def format_date(month, day, year, nationality):
     """Take in four strings 'month', 'day', 'year' and 'nationality'.
