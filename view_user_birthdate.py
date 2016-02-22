@@ -106,35 +106,17 @@ def chunk_data(file_data, size):
 
     return [data_lines[pos:pos + size] for pos in range(0, len(data_lines), size)]
 
-def parse(data_chunk):
-    """Take in a chunk of data 3 lines long. Parse the 3 lines of code
-    into their corresponding parts: username, nationality, and
-    birthdate. Then return the parsed parts.
+def parse(regex, group_name, data_chunk):
+    """Take in a chunk of data. Parse the code according to a given
+    regular expression. Group the parsed data according to a given
+    group name and return it. If there is not a match, return None.
     """
     # Parse username.
-    first_line = re.search(r"username:(?P<username>[\w.-]+)", data_chunk[0])
-    if first_line:
-        username = first_line.group('username')
+    parsed_data = re.search(regex, data_chunk)
+    if parsed_data:
+        return parsed_data.group(group_name)
     else:
-        username = None
-
-    # Parse nationality.
-    second_line = re.search("nationality:"
-                            "(?P<nationality>[a-zA-Z]+ ?[a-zA-Z]*)", data_chunk[1])
-    if second_line:
-        nationality = second_line.group('nationality')
-    else:
-        nationality = None
-
-    # Parse birthdate.
-    last_line = re.search("birthdate:"
-                          "(?P<birthdate>[0-9]{1,2}/[0-9]{1,2}/[0-9]{4})", data_chunk[2])
-    if last_line:
-        birthdate = last_line.group('birthdate')
-    else:
-        birthdate = None
-
-    return username, nationality, birthdate
+        return None
 
 def build_bday_book(file_name):
     """Take in the name of a file. Use the contents of the file to
@@ -145,7 +127,11 @@ def build_bday_book(file_name):
     assert data, "There is no data!"
     data_chunks = chunk_data(data, 3)
     for chunk in data_chunks:
-        username, nationality, birthdate = parse(chunk)
+        username = parse(r"username:(?P<username>[\w.-]+)", 'username', chunk[0])
+        nationality = parse("nationality:(?P<nationality>[a-zA-Z]+ ?[a-zA-Z]*)",
+                            'nationality', chunk[1])
+        birthdate = parse("birthdate:(?P<birthdate>[0-9]{1,2}/[0-9]{1,2}/[0-9]{4})",
+                          'birthdate', chunk[2])
         if username and nationality and birthdate:
             month, day, year = build_date(birthdate)
             birthdate = format_date(month, day, year, nationality)
