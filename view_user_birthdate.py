@@ -1,7 +1,6 @@
-"""Build a dictionary of usernames and their corresponding birthdates
-formatted to match their respective nationalities. Additionally, take
+"""Build a dictionary of usernames and User objects. Additionally, take
 in user input, match it to any usernames in the dictionary and return
-that user's formatted birthdate.
+that User's formatted birthdate based on the User's nationality.
 """
 import re
 from get_input import get_input
@@ -14,8 +13,9 @@ REGEX_DATE_RULE = ("(?P<month>[0-9]{1,2})" # Month.
 class Date(object):
     """Take in a string in the format:
     mm/dd/yyyy
-    Create a Date object from that string with the attributes month,
-    day, and year.
+    Parse it and create a Date object with the string attributes
+    'month', 'day', and 'year'. A Date object can return its attributes
+    using its display_date() method.
     """
     def __init__(self, string):
         """Instantiate a Date object with the attributes 'month',
@@ -26,7 +26,7 @@ class Date(object):
         self._month, self._day, self._year = parse_date(string)
 
     def get_date_attributes(self):
-        """Return the Date objects month, day, and year."""
+        """Return the Date object's month, day, and year."""
         return self._month, self._day, self._year
 
     def display_date(self):
@@ -37,7 +37,7 @@ class Date(object):
         return "%s/%s/%s" % (month, day, year)
 
 class EuropeanDate(Date):
-    """Create an EuropeanDate which will display its date in the format:
+    """Create a EuropeanDate which will display its date in the format:
     dd/mm/yyyy
     """
     def display_date(self):
@@ -61,15 +61,17 @@ class ChineseDate(Date):
         return '%s/%s/%s' % (year, month, day)
 
 class User(object):
-    """ Take in two strings 'username' and 'nationality' and a Date
-    'birthdate'. Create an object of type User with those same
-    variables as attributes. Keep track of all instantiated User
-    objects with the dictionary 'bday_book'.
+    """Take in three strings 'username', 'nationality', and 'birthdate'.
+    Create an object of type User with two string attributes
+    'username' and 'nationality', and a Date attribute 'birthdate'.
+    User objects can access their attributes with get_<attribute>()
+    methods. Additionally, they can print their birthdates according
+    to the custom of their nation using the print_birthdate() method.
     """
     def __init__(self, username, nationality, birthdate):
-        """Instantiate an object with the attributes 'username',
-        'nationality', and 'birthdate'. If user is not in the
-        bday_book, add the User's username and birthdate.
+        """Instantiate a User object with the string attributes
+        'username' and 'nationality', and the Date attribute
+        'birthdate'.
         """
         assert re.search(r"[\w.-]+", username), "Invalid username."
         assert re.search("[a-zA-Z]+ ?[a-zA-Z]*", nationality), "Invalid nationality."
@@ -130,7 +132,8 @@ class User(object):
 
 def parse_date(string):
     """Take in a string containing a date in the format mm/dd/yyyy and
-    return three strings representing a valid day, month, and year.
+    return three numerical strings representing a valid day, month, and
+    year.
     """
     date = re.search(REGEX_DATE_RULE, string)
     assert date, "A string in the format mm/dd/yyyy must be provided."
@@ -144,8 +147,8 @@ def parse_date(string):
     return str(month), str(day), str(year)
 
 def make_int(string):
-    """Convert a given string to an integer. If it cannot be converted,
-    return None.
+    """Convert a given numerical string to an integer. If it cannot be
+    converted, return None.
     """
     try:
         return int(string)
@@ -220,7 +223,7 @@ def parse(regex, group_name, data_chunk):
 def build_bday_book(file_name):
     """Take in the name of a file. Use the contents of the file to
     build a dictionary where the keys of the dictionary are the
-    usernames and the values are the corresponding birthdates.
+    usernames and the values are User objects.
     """
     bday_book = {}
     data = read_file(file_name)
