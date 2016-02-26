@@ -19,12 +19,3 @@ def test_build_bday_book():
     assert '' not in bday_book
     assert 'homersimpson' not in bday_book
     assert 'margesimpson' not in bday_book
-    count = 0
-    for entry in bday_book:
-        if entry == 'coit125':
-            count = count + 1
-    assert count == 1
-    # Check a sample entry's values.
-    assert bday_book['chenxiang'].get_username() == 'chenxiang'
-    assert bday_book['chenxiang'].get_nationality() == 'chinese'
-    assert bday_book['chenxiang'].get_birthdate().display_date() == '2/14/1989'

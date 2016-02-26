@@ -3,6 +3,7 @@ in user input, match it to any usernames in the dictionary and return
 that User's formatted birthdate based on the User's nationality.
 """
 import re
+import abc
 from get_input import get_input
 
 REGEX_DATE_RULE = ("(?P<month>[0-9]{1,2})" # Month.
@@ -17,47 +18,59 @@ class Date(object):
     'month', 'day', and 'year'. A Date object can return its attributes
     using its display_date() method.
     """
-    def __init__(self, string):
+    def __init__(self, month, day, year):
         """Instantiate a Date object with the attributes 'month',
         'day', and 'year'.
         """
-        assert_response = "A string in the format mm/dd/yyyy must be provided."
-        assert re.search(REGEX_DATE_RULE, string), assert_response
-        self._month, self._day, self._year = parse_date(string)
+        assert is_valid_date(make_int(month), make_int(day), make_int(year)), "Invalid date."
+        self._month = month
+        self._day = day
+        self._year = year
 
-    def get_date_attributes(self):
-        """Return the Date object's month, day, and year."""
-        return self._month, self._day, self._year
+    def show_self(self):
+        """Return attributes of the Date object."""
+        return (self._month, self._day, self._year)
 
     def display_date(self):
-        """Return a string in the format:
+        """Return a string version of the Date object's full date."""
+        month, day, year = self.show_self()
+        return self._format_date(month, day, year)
+
+    @abc.abstractmethod
+    def _format_date(self, month, day, year):
+        pass
+
+class AmericanDate(Date):
+    """Create an AmericanDate which will display its date in the format:
+    mm/dd/yyyy
+    """
+    def _format_date(self, month, day, year):
+        """Using the 3 strings 'month', 'day', and 'year', return a
+        string in the American format:
         mm/dd/yyyy
         """
-        month, day, year = self.get_date_attributes()
-        return "%s/%s/%s" % (month, day, year)
+        return '%s/%s/%s' % (month, day, year)
 
 class EuropeanDate(Date):
     """Create a EuropeanDate which will display its date in the format:
     dd/mm/yyyy
     """
-    def display_date(self):
-        """Using the attributes 'month', 'day', and 'year', return a
+    def _format_date(self, month, day, year):
+        """Using the 3 strings 'month', 'day', and 'year', return a
         string in the European format:
         dd/mm/yyyy
         """
-        month, day, year = self.get_date_attributes()
         return '%s/%s/%s' % (day, month, year)
 
 class ChineseDate(Date):
     """Create a ChineseDate which will display its date in the format:
     yyyy/mm/dd
     """
-    def display_date(self):
+    def _format_date(self, month, day, year):
         """Using the attributes 'month', 'day', and 'year', return a
         string in the Chinese format:
         yyyy/mm/dd
         """
-        month, day, year = self.get_date_attributes()
         return '%s/%s/%s' % (year, month, day)
 
 class User(object):
@@ -74,23 +87,16 @@ class User(object):
         'birthdate'.
         """
         assert re.search(r"[\w.-]+", username), "Invalid username."
-        assert re.search("[a-zA-Z]+ ?[a-zA-Z]*", nationality), "Invalid nationality."
-        assert re.search("[0-9]{1,4}/[0-9]{1,2}/[0-9]{1,4}", birthdate), "Invalid birthdate."
         self._username = username.lower()
+
+        assert re.search("[a-zA-Z]+ ?[a-zA-Z]*", nationality), "Invalid nationality."
         self._nationality = nationality.lower()
-        self._birthdate = Date(birthdate)
 
-    def get_username(self):
-        """Return the User object's username."""
-        return self._username
-
-    def get_nationality(self):
-        """Return the User object's nationality."""
-        return self._nationality
-
-    def get_birthdate(self):
-        """Return the User object's username."""
-        return self._birthdate
+        assert_response = "A string in the format mm/dd/yyyy must be provided."
+        assert re.search(REGEX_DATE_RULE, birthdate), assert_response
+        month, day, year = parse_date(birthdate)
+        assert is_valid_date(make_int(month), make_int(day), make_int(year)), "Invalid date."
+        self._birthdate = Date(month, day, year)
 
     def print_birthdate(self):
         """Format and print the User's birthdate according to its nationality."""
@@ -99,9 +105,9 @@ class User(object):
     def format_birthdate(self):
         """Format the User's birthdate according to its nationality."""
         date_format_book = {
-            'american': Date,
-            'belizean': Date,
-            'micronesian': Date,
+            'american': AmericanDate,
+            'belizean': AmericanDate,
+            'micronesian': AmericanDate,
             'british': EuropeanDate,
             'irish': EuropeanDate,
             'german': EuropeanDate,
@@ -127,8 +133,9 @@ class User(object):
             'lithuanian': ChineseDate,
             'iranian': ChineseDate
         }
-        assert self.get_nationality() in date_format_book, "Nationality format unknown."
-        return date_format_book[self.get_nationality()](self.get_birthdate().display_date())
+        assert self._nationality in date_format_book, "Nationality format unknown."
+        month, day, year = self._birthdate.show_self()
+        return date_format_book[self._nationality](month, day, year)
 
 def parse_date(string):
     """Take in a string containing a date in the format mm/dd/yyyy and
@@ -215,10 +222,7 @@ def parse(regex, group_name, data_chunk):
     """
     # Parse username.
     parsed_data = re.search(regex, data_chunk)
-    if parsed_data:
-        return parsed_data.group(group_name)
-    else:
-        return None
+    return parsed_data.group(group_name) if parsed_data else None
 
 def build_bday_book(file_name):
     """Take in the name of a file. Use the contents of the file to
@@ -232,9 +236,13 @@ def build_bday_book(file_name):
     for chunk in data_chunks:
         username = parse(r"username:(?P<username>[\w.-]+)", 'username', chunk[0])
         nationality = parse("nationality:(?P<nationality>[a-zA-Z]+ ?[a-zA-Z]*)",
-                            'nationality', chunk[1])
+                            "nationality",
+                            chunk[1],
+                           )
         birthdate = parse("birthdate:(?P<birthdate>[0-9]{1,2}/[0-9]{1,2}/[0-9]{4})",
-                          'birthdate', chunk[2])
+                          "birthdate",
+                          chunk[2],
+                         )
         if username and nationality and birthdate:
             bday_book[username] = User(username, nationality, birthdate)
     return bday_book

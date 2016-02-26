@@ -2,7 +2,7 @@
 import view_user_birthdate
 
 def test_europeandate():
-    """Assert the correct return value for a ChineseDate object when
+    """Assert the correct return value for a EuropeanDate object when
     its display_date method is called.
     """
-    assert view_user_birthdate.EuropeanDate('1/25/1984').display_date() == '25/1/1984'
+    assert view_user_birthdate.EuropeanDate('1', '25', '1984').display_date() == '25/1/1984'

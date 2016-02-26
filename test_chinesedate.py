@@ -5,4 +5,4 @@ def test_chinesedate():
     """Assert the correct return value for a ChineseDate object when
     its display_date method is called.
     """
-    assert view_user_birthdate.ChineseDate('1/25/1984').display_date() == '1984/1/25'
+    assert view_user_birthdate.ChineseDate('1', '25', '1984').display_date() == '1984/1/25'
