@@ -27,18 +27,13 @@ class Date(object):
         self._day = day
         self._year = year
 
-    def show_self(self):
-        """Return attributes of the Date object."""
-        return (self._month, self._day, self._year)
-
     def display_date(self):
         """Return a string version of the Date object's full date."""
-        month, day, year = self.show_self()
-        return self._format_date(month, day, year)
+        return self._format_date(self._month, self._day, self._year)
 
     @abc.abstractmethod
     def _format_date(self, month, day, year):
-        pass
+        raise NotImplementedError
 
 class AmericanDate(Date):
     """Create an AmericanDate which will display its date in the format:
@@ -74,36 +69,32 @@ class ChineseDate(Date):
         return '%s/%s/%s' % (year, month, day)
 
 class User(object):
-    """Take in three strings 'username', 'nationality', and 'birthdate'.
-    Create an object of type User with two string attributes
-    'username' and 'nationality', and a Date attribute 'birthdate'.
-    User objects can access their attributes with get_<attribute>()
-    methods. Additionally, they can print their birthdates according
-    to the custom of their nation using the print_birthdate() method.
+    """Take in three strings 'username', 'nationality', and
+    'birthdate'. Create an object of type User with two string
+    attributes 'username' and 'nationality', and either an
+    AmericanDate, EuropeanDate, or ChineseDate object attribute
+    assigned to 'birthdate'. User objects can print their birthdates
+    according to the custom of their nation using the print_birthdate()
+    method.
     """
     def __init__(self, username, nationality, birthdate):
         """Instantiate a User object with the string attributes
-        'username' and 'nationality', and the Date attribute
-        'birthdate'.
+        'username' and 'nationality', and either an AmericanDate, 
+        EuropeanDate, or ChineseDate attribute named 'birthdate'.
         """
+        # Assign username attribute.
         assert re.search(r"[\w.-]+", username), "Invalid username."
         self._username = username.lower()
 
+        # Assign nationality attribute.
         assert re.search("[a-zA-Z]+ ?[a-zA-Z]*", nationality), "Invalid nationality."
         self._nationality = nationality.lower()
 
+        # Assign birthdate attribute formatted to correspond to the User's nationality.
         assert_response = "A string in the format mm/dd/yyyy must be provided."
         assert re.search(REGEX_DATE_RULE, birthdate), assert_response
         month, day, year = parse_date(birthdate)
         assert is_valid_date(make_int(month), make_int(day), make_int(year)), "Invalid date."
-        self._birthdate = Date(month, day, year)
-
-    def print_birthdate(self):
-        """Format and print the User's birthdate according to its nationality."""
-        print self.format_birthdate().display_date()
-
-    def format_birthdate(self):
-        """Format the User's birthdate according to its nationality."""
         date_format_book = {
             'american': AmericanDate,
             'belizean': AmericanDate,
@@ -134,8 +125,11 @@ class User(object):
             'iranian': ChineseDate
         }
         assert self._nationality in date_format_book, "Nationality format unknown."
-        month, day, year = self._birthdate.show_self()
-        return date_format_book[self._nationality](month, day, year)
+        self._birthdate = date_format_book[self._nationality](month, day, year)
+
+    def print_birthdate(self):
+        """Format and print the User's birthdate according to its nationality."""
+        print self._birthdate.display_date()
 
 def parse_date(string):
     """Take in a string containing a date in the format mm/dd/yyyy and
