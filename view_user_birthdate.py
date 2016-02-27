@@ -33,7 +33,7 @@ class Date(object):
 
     @abc.abstractmethod
     def _format_date(self, month, day, year):
-        raise NotImplementedError
+        raise NotImplementedError()
 
 class AmericanDate(Date):
     """Create an AmericanDate which will display its date in the format:
