@@ -12,11 +12,10 @@ REGEX_DATE_RULE = ("(?P<month>[0-9]{1,2})" # Month.
                   )
 
 class Date(object):
-    """Take in a string in the format:
-    mm/dd/yyyy
-    Parse it and create a Date object with the string attributes
-    'month', 'day', and 'year'. A Date object can return its attributes
-    using its display_date() method.
+    """Take in three strings, 'month', 'day', and 'year'. Create a Date
+    object with the string attributes 'month', 'day', and 'year'. A 
+    Date object can return its attributes using its display_date()
+    method.
     """
     def __init__(self, month, day, year):
         """Instantiate a Date object with the attributes 'month',
@@ -221,7 +220,11 @@ def parse(regex, group_name, data_chunk):
 def build_bday_book(file_name):
     """Take in the name of a file. Use the contents of the file to
     build a dictionary where the keys of the dictionary are the
-    usernames and the values are User objects.
+    usernames and the values are User objects. The expected format of
+    the file is:
+    username:<username>
+    nationality:<nationality>
+    birthdate:<mm/dd/yyyy>
     """
     bday_book = {}
     data = read_file(file_name)

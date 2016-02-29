@@ -1,0 +1,27 @@
+Coupling and Cohesion
+1) Am I correct in saying that coupling and cohesion share an inverse relationship? Or is it just ideal that their relationship appear as the inverse cohesion high, coupling low?
+2) Of the various types of cohesion, which do you endorse and why?
+3) Can you give me quick and dirty examples of code that has high cohesion with low coupling and an example of low cohesion with high coupling?
+
+OO Design: Encapsulation
+1) Of the alternatives given for avoiding global variables, which is the best option for REGEX_RULE? Why? Do the benefits of "the best option" warrant change?
+2) Based on the reading, it seemed to me that keeping class members private and variables local is the ideal way to go and are important elements for good encapsulation. Is this true and what other elements comprise of "good encapsulation"?
+
+OO Design: Abstraction
+1) What does a violation of the Liskov Substitution Principle look like? What can go wrong if the principle is violated?
+2) Can you talk through how the Composition over Inheritance principle is being implemented in the "Duck Diagram"?
+
+Refactoring:
+1) Regarding shaving the yak, the takeaway is that you should make a compromise by finding a solution to the broken hose that is more easily and readily available?
+
+UML:
+1) What is the difference between a protected variable and a private variable? How do I make something protected? What is the use case of protected?
+2) How can you display a method that has the potential to return a variety of variable types on a UML class diagram?
+
+Patterns:
+1) This isn't directly related to patterns, but came up during the reading. Static methods. Am I correct in saying that I could use a static function declared in a class without ever having created an object of that class?
+2) Thus far, my understanding of a factory is that it encapsulates the creation of an object. In this way, any changes that need to occur, need only take place inside the factory instead of all over your code whereever the object was instantiated. Is this correct?
+3) Is what I did with the Date class an example of polymorphism? If not, can you give me a concrete example?
+
+
+
