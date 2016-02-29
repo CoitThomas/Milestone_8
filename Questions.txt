@@ -22,6 +22,3 @@ Patterns:
 1) This isn't directly related to patterns, but came up during the reading. Static methods. Am I correct in saying that I could use a static function declared in a class without ever having created an object of that class?
 2) Thus far, my understanding of a factory is that it encapsulates the creation of an object. In this way, any changes that need to occur, need only take place inside the factory instead of all over your code whereever the object was instantiated. Is this correct?
 3) Is what I did with the Date class an example of polymorphism? If not, can you give me a concrete example?
-
-
-
